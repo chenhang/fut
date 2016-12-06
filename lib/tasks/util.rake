@@ -24,7 +24,7 @@ namespace :util do
   end
 
   task update_squads: :environment do
-    get_squad Squad.last.id
+    get_squad Squad.last.squad_id
   end
 
   def to_valid_json!(str)
