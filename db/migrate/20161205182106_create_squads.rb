@@ -4,7 +4,7 @@ class CreateSquads < ActiveRecord::Migration
       t.string :name
       t.references :sbc
       t.references :challenge
-      t.string :squad_id
+      t.string :squad_url
       t.text :original_data, limit: 65535
       t.text :players, limit: 65535
       t.text :info, limit: 65535

@@ -6,9 +6,24 @@ require 'pry-rails'
 
 namespace :util do
   task update_sbcs: :environment do
-    binding.pry
-    # sbcs = Sbc.create! get_sbcs
+    get_sbcs.map do |sbc_params|
+      sbc = Sbc.find_or_initialize_by url: sbc_params[:url]
+      sbc.attributes = sbc_params
+      sbc.save!
+      get_challenges(sbc.url).map do |chanllenge_params|
+        challenge = sbc.challenges.find_or_initialize_by url: chanllenge_params[:url]
+        challenge.attributes = chanllenge_params.merge(sbc_url: sbc.url)
+        challenge.save!
+      end
+    end
+  end
 
+  task update_squads: :environment do
+    Challenge.find_each do |challenge|
+      get_squads(challenge.url).each do |squad_url|
+
+      end
+    end
   end
 
   def to_valid_json!(str)
@@ -69,18 +84,16 @@ namespace :util do
 
   def get_squads(url)
     page = 1
-    results = {}
-    while true
-      html = get(url + "&page=#{page}")
+    max_page = nil
+    results = []
+    while max_page.nil || page <= max_page
+      html = get(url + "squads/?page=#{page}")
       html_object = Nokogiri::HTML(html)
-      result = html_object.css('.player-item a').map do |a|
-        get_squad a.attributes['href'].text.split('/').last
-      end.to_h
-      break if result.blank?
-      results.merge!(result)
+      max_page = html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i unless max_page.present?
+      result << html_object.css('.player-item a').map { |a| a.attributes['href'].text.split('/').last }
       page += 1
     end
-    results
+    results.flatten
   end
 
   def get_sbcs
@@ -93,6 +106,18 @@ namespace :util do
       rewards = d.children[5].children[2].text.gsub(':', '').gsub("\n", '').strip
       expire = d.children[5].children[7].try(:attribute, 'data-default').try(:text)
       {url: url, name: name, desc: desc, rewards: rewards, expire: expire}
+    end
+  end
+
+  def get_challenges(url)
+    html = get(url)
+    html_object = Nokogiri::HTML(html)
+    html_object.css('.challenge-set').map do |d|
+      url = "http://www.futhead.com#{d.attributes['href'].text}"
+      name = d.children[1].text.gsub('  ', '').gsub("\n", ' ').strip
+      desc = d.children[3].text
+      rewards = d.children[5].children[1].try(:text).to_s.gsub(':', '').gsub("\n", '').strip
+      {url: url, name: name, desc: desc, rewards: rewards}
     end
   end
 

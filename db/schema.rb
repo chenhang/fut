@@ -15,7 +15,11 @@ ActiveRecord::Schema.define(version: 20161206153820) do
 
   create_table "challenges", force: :cascade do |t|
     t.string   "name"
+    t.integer  "sbc_id"
+    t.string   "sbc_url"
     t.text     "data",       limit: 65535
+    t.text     "desc",       limit: 65535
+    t.text     "rewards",    limit: 65535
     t.text     "squads",     limit: 65535
     t.string   "url"
     t.datetime "created_at",               null: false
