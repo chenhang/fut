@@ -29,6 +29,7 @@ namespace :util do
       challenge.squads.order(updated_at: :asc).each do |squad|
         data = get_squad squad.squad_id
         squad.attributes = data.slice :original_data, :player_data, :position_info
+        squad.save!
         requirement = data[:requirement]
       end
       challenge.update requirement: requirement if requirement
