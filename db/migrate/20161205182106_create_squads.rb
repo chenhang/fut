@@ -7,8 +7,8 @@ class CreateSquads < ActiveRecord::Migration
       t.string :challenge_url
       t.string :squad_id
       t.text :original_data, limit: 65535
-      t.text :players, limit: 65535
-      t.text :info, limit: 65535
+      t.text :player_data, limit: 65535
+      t.text :position_info, limit: 65535
       t.string :url
       
       t.timestamps null: false

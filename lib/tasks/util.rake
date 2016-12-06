@@ -24,7 +24,15 @@ namespace :util do
   end
 
   task update_squads: :environment do
-    get_squad Squad.last.squad_id
+    Challenge.find_each do |challenge|
+      requirement = nil
+      challenge.squads.order(updated_at: :asc).each do |squad|
+        data = get_squad squad.squad_id
+        squad.attributes = data.slice :origial_data, :player_data, :position_info
+        requirement = data[:requirement]
+      end
+      challenge.update requirement: requirement if requirement
+    end
   end
 
   def to_valid_json!(str)
@@ -78,10 +86,9 @@ namespace :util do
     html = get(squad_api(id))
     data = JSON.parse(html.match(/'\[\{.*\}\]'/)[0][1..-2]).reject { |d| d['player'].blank? }
     player_data = extract_futhead_data(data)
-    squad_position = JSON.parse to_valid_json!(html.match(/\{.*\}/)[0])
+    position_info = JSON.parse to_valid_json!(html.match(/\{.*\}/)[0])
     requirement = JSON.parse to_valid_json!(html.match(/\(\[\{.*\}\]\)/)[0][1..-2])
-    binding.pry
-    {:origial_data => data, :players_data => player_data, squad_position: squad_position, requirement: requirement}
+    {:origial_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
   end
 
   def get_squads(url)
@@ -134,7 +141,7 @@ namespace :util do
       totw = player['data']['revision_type'] != 'NIF'
       rare = player['data']['rare']
       player_detail = search(name, position, rating, totw, rare).first
-      data_of(player_detail['id']).merge('totw' => totw, 'rare' => rare).merge player_detail
+      data_of(player_detail['id']).merge('original_id' => player['player'], 'totw' => totw, 'rare' => rare).merge player_detail
     end
   # rescue
   #   binding.pry

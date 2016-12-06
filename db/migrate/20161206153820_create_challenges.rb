@@ -7,7 +7,7 @@ class CreateChallenges < ActiveRecord::Migration
       t.text :data, limit: 65535
       t.text :desc, limit: 65535
       t.text :rewards, limit: 65535
-      t.text :squads, limit: 65535
+      t.text :requirement, limit: 65535
       t.string :url
 
       t.timestamps null: false
