@@ -14,16 +14,17 @@ namespace :util do
         challenge = sbc.challenges.find_or_initialize_by url: chanllenge_params[:url]
         challenge.attributes = chanllenge_params.merge(sbc_url: sbc.url)
         challenge.save!
+        get_squads(challenge.url).each do |squad_params|
+          squad = challenge.squads.find_or_initialize_by url: squad_params[:url]
+          squad.attributes = squad_params.merge challenge_url: challenge.url
+          squad.save!
+        end
       end
     end
   end
 
   task update_squads: :environment do
-    Challenge.find_each do |challenge|
-      get_squads(challenge.url).each do |squad_url|
-
-      end
-    end
+    get_squad Squad.last.id
   end
 
   def to_valid_json!(str)
@@ -79,21 +80,25 @@ namespace :util do
     player_data = extract_futhead_data(data)
     squad_position = JSON.parse to_valid_json!(html.match(/\{.*\}/)[0])
     requirement = JSON.parse to_valid_json!(html.match(/\(\[\{.*\}\]\)/)[0][1..-2])
-    [id, {'origial_data' => data, 'players' => player_data, 'squad_position' => squad_position, 'requirement' => requirement}]
+    binding.pry
+    {:origial_data => data, :players_data => player_data, squad_position: squad_position, requirement: requirement}
   end
 
   def get_squads(url)
     page = 1
     max_page = nil
     results = []
-    while max_page.nil || page <= max_page
+    while max_page.nil? || page <= max_page
       html = get(url + "squads/?page=#{page}")
       html_object = Nokogiri::HTML(html)
       max_page = html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i unless max_page.present?
-      result << html_object.css('.player-item a').map { |a| a.attributes['href'].text.split('/').last }
+      html_object.css('.player-item a').map do |a|
+        id = a.attributes['href'].text.split('/').last
+        results << {squad_id: id, url: squad_api(id), name: a.css('.hidden-xs').children[0].text}
+      end
       page += 1
     end
-    results.flatten
+    results
   end
 
   def get_sbcs
@@ -131,8 +136,8 @@ namespace :util do
       player_detail = search(name, position, rating, totw, rare).first
       data_of(player_detail['id']).merge('totw' => totw, 'rare' => rare).merge player_detail
     end
-  rescue
-    binding.pry
+  # rescue
+  #   binding.pry
   end
 
   def run

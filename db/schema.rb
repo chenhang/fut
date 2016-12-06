@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 20161206153820) do
     t.string   "name"
     t.integer  "sbc_id"
     t.integer  "challenge_id"
+    t.string   "challenge_url"
     t.string   "squad_id"
     t.text     "original_data", limit: 65535
     t.text     "players",       limit: 65535
