@@ -3,6 +3,7 @@ class CreateSquads < ActiveRecord::Migration
     create_table :squads do |t|
       t.string :name
       t.references :sbc
+      t.references :challenge
       t.string :squad_id
       t.text :original_data, limit: 65535
       t.text :players, limit: 65535

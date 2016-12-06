@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161205182920) do
+ActiveRecord::Schema.define(version: 20161206153820) do
+
+  create_table "challenges", force: :cascade do |t|
+    t.string   "name"
+    t.text     "data",       limit: 65535
+    t.text     "squads",     limit: 65535
+    t.string   "url"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
 
   create_table "players", force: :cascade do |t|
     t.string   "name"
@@ -25,9 +34,10 @@ ActiveRecord::Schema.define(version: 20161205182920) do
 
   create_table "sbcs", force: :cascade do |t|
     t.string   "name"
-    t.string   "sbc_id"
     t.text     "data",       limit: 65535
-    t.text     "squads",     limit: 65535
+    t.text     "desc",       limit: 65535
+    t.text     "expire",     limit: 65535
+    t.text     "rewards",    limit: 65535
     t.string   "url"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
@@ -36,6 +46,7 @@ ActiveRecord::Schema.define(version: 20161205182920) do
   create_table "squads", force: :cascade do |t|
     t.string   "name"
     t.integer  "sbc_id"
+    t.integer  "challenge_id"
     t.string   "squad_id"
     t.text     "original_data", limit: 65535
     t.text     "players",       limit: 65535

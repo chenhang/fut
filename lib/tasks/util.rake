@@ -6,6 +6,8 @@ require 'pry-rails'
 
 namespace :util do
   task update_sbcs: :environment do
+    binding.pry
+    # sbcs = Sbc.create! get_sbcs
 
   end
 
