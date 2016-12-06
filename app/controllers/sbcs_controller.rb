@@ -1,0 +1,2 @@
+class SbcsController < ApplicationController
+end
