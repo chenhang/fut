@@ -81,6 +81,19 @@ namespace :util do
     results
   end
 
+  def get_sbcs
+    html = get("http://www.futhead.com/squad-building-challenges/")
+    html_object = Nokogiri::HTML(html)
+    html_object.css('.challenge-set').map do |d|
+      url = "http://www.futhead.com#{d.attributes['href'].text}"
+      name = d.children[1].text.gsub('  ', '').gsub("\n", ' ').strip
+      desc = d.children[3].text
+      rewards = d.children[5].children[2].text.gsub(':', '').gsub("\n", '').strip
+      expire = d.children[5].children[7].try(:attribute, 'data-default').try(:text)
+      {url: url, name: name, desc: desc, rewards: rewards, expire: expire}
+    end
+  end
+
   def extract_futhead_data(data)
     data.map do |player|
       name = parsed_name player['data']['full_name']
