@@ -28,7 +28,7 @@ namespace :util do
       requirement = nil
       challenge.squads.order(updated_at: :asc).each do |squad|
         data = get_squad squad.squad_id
-        squad.attributes = data.slice :origial_data, :player_data, :position_info
+        squad.attributes = data.slice :original_data, :player_data, :position_info
         requirement = data[:requirement]
       end
       challenge.update requirement: requirement if requirement
@@ -88,7 +88,7 @@ namespace :util do
     player_data = extract_futhead_data(data)
     position_info = JSON.parse to_valid_json!(html.match(/\{.*\}/)[0])
     requirement = JSON.parse to_valid_json!(html.match(/\(\[\{.*\}\]\)/)[0][1..-2])
-    {:origial_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
+    {:original_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
   end
 
   def get_squads(url)
