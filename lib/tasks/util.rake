@@ -24,7 +24,7 @@ namespace :util do
   end
 
   task update_squads: :environment do
-    Challenge.find_each do |challenge|
+    Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'").pluck(:id)).find_each do |challenge|
       requirement = nil
       challenge.squads.order(updated_at: :asc).each do |squad|
         data = get_squad squad.squad_id
@@ -99,7 +99,7 @@ namespace :util do
     while max_page.nil? || page <= max_page
       html = get(url + "squads/?page=#{page}")
       html_object = Nokogiri::HTML(html)
-      max_page = (html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i rescue 1)unless max_page.present?
+      max_page = [(html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i rescue 1), 5].min unless max_page.present?
       html_object.css('.player-item a').map do |a|
         id = a.attributes['href'].text.split('/').last
         results << {squad_id: id, url: squad_api(id), name: a.css('.hidden-xs').children[0].text}
