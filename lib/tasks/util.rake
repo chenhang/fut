@@ -75,7 +75,7 @@ namespace :util do
     original_data = get_json(api(name))
     original_data.select do |player|
       filters = []
-      filters << (player['rating'] == rating.to_s) unless rating.nil?
+      filters << (player['rating'] == rating.to_s || ((rating.to_i - 2)..rating.to_i + 2).to_a.include?(player['rating'].to_i)) unless rating.nil?
       filters << (player['position'].downcase == position.to_s.downcase) unless position.nil?
       filters << ([totw, player['version'] != 'Normal'].uniq.size == 1) unless totw.nil?
       filters << ([rare, player['rare'] == '1'].uniq.size == 1) unless rare.nil?
