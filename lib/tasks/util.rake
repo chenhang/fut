@@ -23,6 +23,19 @@ namespace :util do
     end
   end
 
+  task update_live_squads: :environment do
+    Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'").pluck(:id)).find_each do |challenge|
+      requirement = nil
+      challenge.squads.order(updated_at: :asc).each do |squad|
+        data = get_squad squad.squad_id
+        squad.attributes = data.slice :original_data, :player_data, :position_info
+        squad.save!
+        requirement = data[:requirement]
+      end
+      challenge.update requirement: requirement if requirement
+    end
+  end
+
   task update_squads: :environment do
     Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'").pluck(:id)).find_each do |challenge|
       requirement = nil
@@ -92,14 +105,14 @@ namespace :util do
     {:original_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
   end
 
-  def get_squads(url)
+  def get_all_squads(url)
     page = 1
     max_page = nil
     results = []
     while max_page.nil? || page <= max_page
       html = get(url + "squads/?page=#{page}")
       html_object = Nokogiri::HTML(html)
-      max_page = [(html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i rescue 1), 5].min unless max_page.present?
+      max_page = (html_object.css('.pagination').first.children[2].children.first.text.gsub(' ','').gsub("\n", '').split('of').last.to_i rescue 1) unless max_page.present?
       html_object.css('.player-item a').map do |a|
         id = a.attributes['href'].text.split('/').last
         results << {squad_id: id, url: squad_api(id), name: a.css('.hidden-xs').children[0].text}
@@ -107,6 +120,19 @@ namespace :util do
       page += 1
     end
     results
+  end
+
+  def get_squads(url)
+    results = []
+    ['squads/', 'squads/?sort=new', 'squads/?sort=old', 'squads/?sort=top'].map do |path|
+      html = get(url + path)
+      html_object = Nokogiri::HTML(html)
+      html_object.css('.player-item a').map do |a|
+        id = a.attributes['href'].text.split('/').last
+        results << {squad_id: id, url: squad_api(id), name: a.css('.hidden-xs').children[0].text}
+      end
+    end
+    results.uniq
   end
 
   def get_sbcs
