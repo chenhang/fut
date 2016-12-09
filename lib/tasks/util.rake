@@ -104,7 +104,6 @@ namespace :util do
 
   def get_squad(id)
     html = get(squad_api(id))
-    binding.pry
     data = JSON.parse(html.match(/'\[\{.*\}\]'/)[0][1..-2]).reject { |d| d['player'].blank? }
     player_data = extract_futhead_data(data)
     position_info = JSON.parse to_valid_json!(html.match(/ \{.*\} /)[0])
