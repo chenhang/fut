@@ -106,7 +106,7 @@ namespace :util do
     html = get(squad_api(id))
     data = JSON.parse(html.match(/'\[\{.*\}\]'/)[0][1..-2]).reject { |d| d['player'].blank? }
     player_data = extract_futhead_data(data)
-    position_info = JSON.parse to_valid_json!(html.match(/ \{.*\} /)[0])
+    position_info = JSON.parse to_valid_json!(html.match(/ \{.*\}/)[0])
     requirement = JSON.parse to_valid_json!(html.match(/\(\[\{.*\}\]\)/)[0][1..-2])
     {:original_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
   end
