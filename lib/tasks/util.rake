@@ -23,7 +23,7 @@ namespace :util do
     end
   end
 
-  task update_live_squads: :environment do
+  task update_live_squads: :environment do |_, args|
     Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'").pluck(:id)).find_each do |challenge|
       requirement = nil
       challenge.squads.order(updated_at: :asc).each do |squad|
@@ -36,10 +36,13 @@ namespace :util do
     end
   end
 
-  task update_squads: :environment do
+  task :update_squads, [:only_create] => :environment do |_, args|
+    binding.pry
     Challenge.where(sbc_id: Sbc.where(name: "Ligue 1 LEAGUES").pluck(:id)).find_each do |challenge|
       requirement = nil
-      challenge.squads.order(updated_at: :asc).each do |squad|
+      squads = challenge.squads.order(updated_at: :asc)
+      squads = squads.where(original_data: nil) if only_create
+      squads.each do |squad|
         data = get_squad squad.squad_id
         squad.attributes = data.slice :original_data, :player_data, :position_info
         squad.save!
@@ -124,7 +127,7 @@ namespace :util do
 
   def get_squads(url)
     results = []
-    ['squads/', 'squads/?sort=new', 'squads/?sort=old', 'squads/?sort=top'].map do |path|
+    ['squads/', 'squads/?sort=new', 'squads/?sort=top'].map do |path|
       html = get(url + path)
       html_object = Nokogiri::HTML(html)
       html_object.css('.player-item a').map do |a|
