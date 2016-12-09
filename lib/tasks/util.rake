@@ -37,11 +37,10 @@ namespace :util do
   end
 
   task :update_squads, [:only_create] => :environment do |_, args|
-    binding.pry
     Challenge.where(sbc_id: Sbc.where(name: "Ligue 1 LEAGUES").pluck(:id)).find_each do |challenge|
       requirement = nil
       squads = challenge.squads.order(updated_at: :asc)
-      squads = squads.where(original_data: nil) if only_create
+      squads = squads.where(original_data: nil) if args[:only_create]
       squads.each do |squad|
         data = get_squad squad.squad_id
         squad.attributes = data.slice :original_data, :player_data, :position_info
