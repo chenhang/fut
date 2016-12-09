@@ -51,6 +51,10 @@ namespace :util do
     end
   end
 
+  task test: :environment do |_, args|
+    get_squad(202162)
+  end
+
   def to_valid_json!(str)
     (0..11).reverse_each { |i| str.gsub!("#{i}:", "'#{i}':") }
     str.gsub!("'", '"')
@@ -100,9 +104,10 @@ namespace :util do
 
   def get_squad(id)
     html = get(squad_api(id))
+    binding.pry
     data = JSON.parse(html.match(/'\[\{.*\}\]'/)[0][1..-2]).reject { |d| d['player'].blank? }
     player_data = extract_futhead_data(data)
-    position_info = JSON.parse to_valid_json!(html.match(/\{.*\}/)[0])
+    position_info = JSON.parse to_valid_json!(html.match(/ \{.*\} /)[0])
     requirement = JSON.parse to_valid_json!(html.match(/\(\[\{.*\}\]\)/)[0][1..-2])
     {:original_data => data, :player_data => player_data, position_info: position_info, requirement: requirement}
   end
