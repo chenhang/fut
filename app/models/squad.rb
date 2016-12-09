@@ -6,4 +6,17 @@ class Squad < ActiveRecord::Base
   belongs_to :challenge
   validates_presence_of :url
   validates_uniqueness_of :url
+
+  def total_prize
+    player_data.sum do |d|
+      prize = d['prize'].to_i
+      prize.zero? ? 10000 : prize
+    end
+  end
+
+  def prizes
+    player_data.map do |d|
+      [d['name'], d['position'], d['prize'].to_i]
+    end
+  end
 end
