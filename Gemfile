@@ -25,6 +25,11 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'json'
 gem 'nokogiri'
 gem 'pry-rails'
+gem 'bootstrap', '~> 4.0.0.alpha3'
+source 'https://rails-assets.org' do
+  gem 'rails-assets-tether', '>= 1.1.0'
+end
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

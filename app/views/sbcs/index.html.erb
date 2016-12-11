@@ -1,0 +1,11 @@
+<div class="row">
+  <% @sbcs.each do |sbc| %>
+      <div class="col-lg-4">
+        <h2><%= sbc.name %></h2>
+        <p><%= sbc.desc %></p>
+        <p class="text-danger"><%= sbc.rewards %></p>
+        <p><%= sbc.expire %></p>
+        <p><a class="btn btn-primary" href="#" role="button">View details »</a></p>
+      </div>
+  <% end %>
+</div>
