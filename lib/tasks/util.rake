@@ -224,7 +224,7 @@ namespace :util do
     html = get("https://www.futbin.com/17/player/#{id}")
     html_object = Nokogiri::HTML(html)
     data = {'id' => id}
-    return unless html.presence
+    return data unless html.presence
 
     basic_info = html_object.css('#info_content').css('table').css('tr').map do |col|
       [col.css('th').text.downcase, col.css('.table-row-text').text.gsub(' years old', '').gsub(',', '').gsub('  ', '').gsub("\n", '')]
