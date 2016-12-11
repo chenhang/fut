@@ -68,12 +68,24 @@ namespace :util do
     puts api
     user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.854.0 Safari/535.2"
     JSON.parse open(URI.extract(URI.encode(api)).first, 'User-Agent' => user_agent).read
+  rescue OpenURI::HTTPError => e
+    if e.message == '404 Not Found'
+      return {}
+    else
+      retry
+    end
   end
 
   def get(api)
     puts api
     user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.854.0 Safari/535.2"
     open(URI.extract(URI.encode(api)).first, 'User-Agent' => user_agent).read
+  rescue OpenURI::HTTPError => e
+    if e.message == '404 Not Found'
+      return ''
+    else
+      retry
+    end
   end
 
   def save(data)
