@@ -7,6 +7,10 @@ class Challenge < ActiveRecord::Base
   validates_uniqueness_of :url
 
   def cheapest_squad
-    squads.sort_by {|s| s.total_prize}.first
+    squads.sort_by { |s| s.total_prize }.first
+  end
+
+  def cheapest_prize
+    cheapest_squad.total_prize
   end
 end

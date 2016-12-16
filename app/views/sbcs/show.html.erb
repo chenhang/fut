@@ -1,0 +1,18 @@
+<div class="jumbotron">
+  <h1><%= @sbc.name %></h1>
+  <p><%= @sbc.desc %></p>
+  <p class="text-danger"><%= @sbc.rewards %></p>
+  <p><%= @sbc.expire %></p>
+  <p>Challenge Count: <%= @sbc.challenges.count %></p>
+</div>
+<div class="row">
+  <% @sbc.challenges.each do |challenge| %>
+      <div class="col-lg-4">
+        <h2><%= challenge.name %></h2>
+        <p><%= challenge.desc %></p>
+        <p class="text-danger"><%= challenge.rewards %></p>
+        <p class="text-danger">Lowest Cost: <%= challenge.cheapest_prize %></p>
+        <p><a class="btn btn-primary" href="<%= challenge_path(challenge) %>" role="button">View details »</a></p>
+      </div>
+  <% end %>
+</div>
