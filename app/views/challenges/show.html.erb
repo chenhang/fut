@@ -1,5 +1,5 @@
 <div id="accordion" role="tablist" aria-multiselectable="true">
-  <% @challenge.squads.sort_by {|s| s.total_prize == 0 ? 100000000 : s.total_prize }.first(20).each do |squad| %>
+  <% @challenge.squads.active.sort_by {|s| s.total_prize == 0 ? 100000000 : s.total_prize }.first(20).each do |squad| %>
       <div class="card">
         <div class="card-header" role="tab" id="headingOne">
           <h5 class="mb-0">

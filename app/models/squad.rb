@@ -7,6 +7,8 @@ class Squad < ActiveRecord::Base
   validates_presence_of :url
   validates_uniqueness_of :url
 
+  scope :active, -> { where.not(original_data: nil)}
+
   def total_prize
     @total_prize ||= player_data.to_a.sum do |d|
       prize = d['prize'].to_i
