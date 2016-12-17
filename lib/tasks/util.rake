@@ -6,7 +6,8 @@ require 'pry-rails'
 
 namespace :util do
   task update_sbcs: :environment do
-    get_sbcs.map do |sbc_params|
+    data = get_sbcs
+    current_sbc_urls = data.map do |sbc_params|
       sbc = Sbc.find_or_initialize_by url: sbc_params[:url]
       sbc.attributes = sbc_params
       sbc.save!
@@ -20,11 +21,13 @@ namespace :util do
           squad.save!
         end
       end
+      sbc_params[:url]
     end
+    Sbc.where.not(url: current_sbc_urls).update_all active: false
   end
 
   task update_live_squads: :environment do |_, args|
-    Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'").pluck(:id)).find_each do |challenge|
+    Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'", active: true).pluck(:id)).find_each do |challenge|
       requirement = nil
       challenge.squads.order(updated_at: :asc).each do |squad|
         data = get_squad squad.squad_id
@@ -37,7 +40,7 @@ namespace :util do
   end
 
   task :update_squads, [:only_create] => :environment do |_, args|
-    Challenge.where(sbc_id: Sbc.where(name: "Ligue 1 LEAGUES").pluck(:id)).find_each do |challenge|
+    Challenge.where(sbc_id: Sbc.where(name: "Ligue 1 LEAGUES", active: true).pluck(:id)).find_each do |challenge|
       requirement = nil
       squads = challenge.squads.order(updated_at: :asc)
       squads = squads.where(original_data: nil) if args[:only_create]

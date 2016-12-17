@@ -11,19 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161206153820) do
+ActiveRecord::Schema.define(version: 20161217041226) do
 
   create_table "challenges", force: :cascade do |t|
     t.string   "name"
     t.integer  "sbc_id"
     t.string   "sbc_url"
-    t.text     "data",       limit: 65535
-    t.text     "desc",       limit: 65535
-    t.text     "rewards",    limit: 65535
-    t.text     "squads",     limit: 65535
+    t.text     "data",        limit: 65535
+    t.text     "desc",        limit: 65535
+    t.text     "rewards",     limit: 65535
+    t.text     "requirement", limit: 65535
     t.string   "url"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "players", force: :cascade do |t|
@@ -43,8 +43,9 @@ ActiveRecord::Schema.define(version: 20161206153820) do
     t.text     "expire",     limit: 65535
     t.text     "rewards",    limit: 65535
     t.string   "url"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.boolean  "active",                   default: true
   end
 
   create_table "squads", force: :cascade do |t|
@@ -54,8 +55,8 @@ ActiveRecord::Schema.define(version: 20161206153820) do
     t.string   "challenge_url"
     t.string   "squad_id"
     t.text     "original_data", limit: 65535
-    t.text     "players",       limit: 65535
-    t.text     "info",          limit: 65535
+    t.text     "player_data",   limit: 65535
+    t.text     "position_info", limit: 65535
     t.string   "url"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
