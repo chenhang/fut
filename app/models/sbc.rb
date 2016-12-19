@@ -3,4 +3,7 @@ class Sbc < ActiveRecord::Base
   has_many :challenges
   validates_presence_of :url
   validates_uniqueness_of :url
+
+  scope :active, -> { where(active: true)}
+
 end
