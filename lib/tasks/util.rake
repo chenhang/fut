@@ -27,23 +27,22 @@ namespace :util do
   end
 
   task update_live_squads: :environment do |_, args|
-    Challenge.where(sbc_id: Sbc.where("name LIKE '%LIVE%'", active: true).pluck(:id)).find_each do |challenge|
-      requirement = nil
-      challenge.squads.order(updated_at: :asc).each do |squad|
-        data = get_squad squad.squad_id
-        squad.attributes = data.slice :original_data, :player_data, :position_info
-        squad.save!
-        requirement = data[:requirement]
-      end
-      challenge.update requirement: requirement if requirement
-    end
+    update_squads 'LIVE', true
   end
 
-  task :update_squads, [:only_create] => :environment do |_, args|
-    Challenge.where(sbc_id: Sbc.where(name: "Ligue 1 LEAGUES", active: true).pluck(:id)).find_each do |challenge|
+  task :update_squads, [:name, :only_create] => :environment do |_, args|
+    update_squads args[:name], args[:only_create]
+  end
+
+  task test: :environment do |_, args|
+    get_squad(202162)
+  end
+
+  def update_squads(name='LIVE', only_create=true)
+    Challenge.where(sbc_id: Sbc.where("name LIKE '%#{name}%'", active: true).pluck(:id)).find_each do |challenge|
       requirement = nil
       squads = challenge.squads.order(updated_at: :asc)
-      squads = squads.where(original_data: nil) if args[:only_create]
+      squads = squads.where(original_data: nil) if only_create
       squads.each do |squad|
         data = get_squad squad.squad_id
         squad.attributes = data.slice :original_data, :player_data, :position_info
@@ -52,10 +51,6 @@ namespace :util do
       end
       challenge.update requirement: requirement if requirement
     end
-  end
-
-  task test: :environment do |_, args|
-    get_squad(202162)
   end
 
   def to_valid_json!(str)
