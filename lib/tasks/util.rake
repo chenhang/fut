@@ -102,7 +102,7 @@ namespace :util do
   end
 
   def search(name, position = nil, rating = nil, totw = nil, rare = nil)
-    name = name.gsub('ü','u')
+    name = name.gsub('ü','u').gsub('á', 'a')
     original_data = get_json(api(name))
     original_data.select do |player|
       filters = []
