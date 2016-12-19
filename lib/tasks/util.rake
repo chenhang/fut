@@ -39,7 +39,7 @@ namespace :util do
   end
 
   def update_squads(name='LIVE', only_create=true)
-    Challenge.where(sbc_id: Sbc.active.where("name LIKE '%?%'", name).pluck(:id)).find_each do |challenge|
+    Challenge.where(sbc_id: Sbc.active.where("name LIKE '%#{name}%'").pluck(:id)).find_each do |challenge|
       requirement = nil
       squads = challenge.squads.order(updated_at: :asc)
       squads = squads.where(original_data: nil) if only_create
