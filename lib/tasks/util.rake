@@ -38,7 +38,7 @@ namespace :util do
     get_squad(202162)
   end
 
-  def update_squads(name='LIVE', only_create=true)
+  def update_squads(name='LIVE', only_create='true')
     only_create = only_create == 'true' ? true : false
     Challenge.where(sbc_id: Sbc.active.where("name LIKE '%#{name}%'").pluck(:id)).find_each do |challenge|
       requirement = nil
@@ -102,6 +102,7 @@ namespace :util do
   end
 
   def search(name, position = nil, rating = nil, totw = nil, rare = nil)
+    name = name.gsub('ü','u')
     original_data = get_json(api(name))
     original_data.select do |player|
       filters = []
